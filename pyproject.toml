@@ -13,6 +13,7 @@ pytest-xdist = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0.2"
+pytest-cov = "^2.10.1"
 
 [tool.poetry.scripts]
 poetry-version-up = 'poetry_hooks.version_up:main'
