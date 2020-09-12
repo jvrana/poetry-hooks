@@ -26,27 +26,11 @@ repos:
     hooks:
     -   id: reorder-python-imports
         args: [--py3-plus]
--   repo: local
+-   repo: https://github.com/jvrana/poetry-hooks
+    rev: 0.1.0
     hooks:
     -   id: poetry-version-up
-        name: poetry-version-up
-        description: todo
-        entry: poetry-version-up
-        language: python
-        always_run: true
-        pass_filenames: false
     -   id: poetry-export
-        name: poetry-export
-        description: todo
-        entry: poetry-export
-        language: python
-        always_run: false
-        pass_filenames: true
-    -   id: poetry-export-dev
+    -   id: poetry-export
         name: poetry-export-dev
-        description: todo
-        entry: poetry-export
-        language: python
-        always_run: false
-        pass_filenames: true
         args: ['--requirements', 'requirements-dev.txt', '--dev', '-vvv']
