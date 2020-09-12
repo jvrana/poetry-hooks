@@ -1,0 +1,3 @@
+[console_scripts]
+poetry-version-up = poetry_create_pkg_version.hook:main
+

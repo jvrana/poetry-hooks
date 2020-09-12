@@ -1,0 +1,7 @@
+-   id: poetry-version-up
+    name: poetry-version-up
+    description: todo
+    entry: poetry-version-up
+    language: python
+    always_run: false
+    pass_filenames: true
