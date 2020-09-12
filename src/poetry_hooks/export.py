@@ -1,5 +1,4 @@
 import argparse
-import difflib
 import logging
 import os
 from typing import Optional
@@ -33,21 +32,21 @@ def poetry_export(filename: str, dev: bool = False, extras: Tuple[str] = ()):
         a = open(filename).read().strip()
         b = out.strip()
         if not a == b:
-            try:
-                logger.info("'{f}' and new '{f}' do not match.".format(f=filename))
-                create_new = True
-                if logger.isEnabledFor("DEBUG"):
-                    result = difflib.unified_diff(
-                        a.split("\n"), b.split("\n"), fromfile=filename, tofile="new"
-                    )
-                    for r in result:
-                        logger.debug(r)
-            except Exception as e:
-                logger.error(
-                    "There was an error logging difference. exception: {}".format(
-                        str(e)
-                    )
-                )
+            create_new = True
+            logger.info("'{f}' and new '{f}' do not match.".format(f=filename))
+            # try:
+            #     if logger.isEnabledFor("DEBUG"):
+            #         result = difflib.unified_diff(
+            #             a.split("\n"), b.split("\n"), fromfile=filename, tofile="new"
+            #         )
+            #         for r in result:
+            #             logger.debug(r)
+            # except Exception as e:
+            #     logger.error(
+            #         "There was an error logging difference. exception: {}".format(
+            #             str(e)
+            #         )
+            #     )
     if create_new:
         logger.info("Writing new '{}'".format(filename))
         with open(filename, "w") as f:
