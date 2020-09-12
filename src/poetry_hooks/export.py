@@ -5,6 +5,7 @@ import os
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
+
 from poetry_hooks.utils import cmd_output
 
 
@@ -63,7 +64,7 @@ POETRYLOCK = "poetry.lock"
 def run(filenames, filename, dev, extras):
     retv = 0
     files = {PYPROJECT, POETRYLOCK, filename}
-    if files.intersection(set(filenames)):
+    if files.intersection(set(filenames)) or not os.path.isfile(filename):
         retv = poetry_export(filename=filename, dev=dev, extras=tuple(extras))
     else:
         logger.warning(
@@ -120,3 +121,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     return run(
         args.filenames, filename=args.requirements, dev=args.dev, extras=args.extras
     )
+
+
+if __name__ == "__main__":
+    exit(main())

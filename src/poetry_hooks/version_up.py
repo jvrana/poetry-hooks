@@ -2,6 +2,7 @@ import argparse
 import logging
 from typing import Optional
 from typing import Sequence
+
 from poetry_hooks.utils import get__version__changed
 from poetry_hooks.utils import write__version__
 
@@ -42,3 +43,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     logger.debug("Args: {}".format(args))
     exit_code = run()
     return exit_code
+
+
+if __name__ == "__main__":
+    exit(main())

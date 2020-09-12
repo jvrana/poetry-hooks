@@ -1,4 +1,3 @@
-from poetry_hooks.utils.safe_file_writer import write_safe_file
 import ast
 import os
 import subprocess
@@ -10,8 +9,9 @@ from typing import Optional
 from typing import Set
 
 import toml
+from poetry_hooks.__version__ import __title__
+from poetry_hooks.__version__ import __version__
 from poetry_hooks.utils.safe_file_writer import write_safe_file
-from poetry_hooks.__version__ import __version__, __title__
 
 
 class CalledProcessError(RuntimeError):
@@ -44,17 +44,23 @@ class DottedDict(dict):
         else:
             keys = key.split(".")
             if default is not ...:
+
                 def getitem(d, k):
                     return d.get(k, default)
 
             else:
+
                 def getitem(d, k):
                     return d[k]
 
             def getter(d, k):
                 if k.startswith("[") and k.endswith("]"):
                     vallist = []
-                    if not isinstance(d, list) or not isinstance(d, tuple) or not isinstance(d, dict):
+                    if (
+                        not isinstance(d, list)
+                        or not isinstance(d, tuple)
+                        or not isinstance(d, dict)
+                    ):
                         d = {}
                     for _v in d:
                         val = getitem(_v, k[1:-1])
@@ -71,6 +77,23 @@ class DottedDict(dict):
         if isinstance(val, dict):
             val = self.__class__(val)
         return val
+
+    def set(self, key, val, default_factory=...):
+        if default_factory is not ...:
+
+            def getter(d, k):
+                return d.get(k, default_factory)
+
+        else:
+
+            def getter(d, k):
+                return d[k]
+
+        keys = key.split(".")
+        imdt = self[keys[0]]
+        for key in keys[1:-1]:
+            imdt = getter(imdt, key)
+        imdt[keys[-1]] = val
 
 
 def main_dir() -> Path:
@@ -89,11 +112,11 @@ def get_pyproject_toml():
 
 def get_main_pkg():
     project = get_pyproject_toml()
-    pkgs = project.get("tool.poetry.packages")
+    pkgs = project.get("tool.poetry.packages", None)
     if pkgs:
         pkgdata = pkgs[0]
-        pkg = Path(pkgdata.get('from', '.'))
-        pkg = pkg.joinpath(pkgdata['include'])
+        pkg = Path(pkgdata.get("from", "."))
+        pkg = pkg.joinpath(pkgdata["include"])
     else:
         pkg = project.get("tool.poetry.name", None)
     if pkg is None:
@@ -101,7 +124,10 @@ def get_main_pkg():
 
     pkg = main_dir().joinpath(pkg)
     if not pkg.is_dir():
-        raise NotADirectoryError("Package '{}' does not exist. Please review your pyproject.toml file.".format(pkg))
+        raise NotADirectoryError(
+            "Package '{}' does not exist. Please review your "
+            "pyproject.toml file.".format(pkg)
+        )
     return pkg
 
 

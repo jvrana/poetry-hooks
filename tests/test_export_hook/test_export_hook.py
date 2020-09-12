@@ -1,21 +1,18 @@
+import inspect
 
-from poetry_hooks.utils import cmd_output
+import pytest
+from poetry_hooks.export import logger
 from poetry_hooks.export import main
 from poetry_hooks.export import parse_args
 from poetry_hooks.export import poetry_cmd
-import pytest
-from pathlib import Path
-from contextlib import contextmanager
-import toml
+from poetry_hooks.utils import cmd_output
 
 
 @pytest.fixture
 def tempdir(tmpdir, pyproject):
-    myproject = tmpdir.join('myproject').mkdir()
+    myproject = tmpdir.join("myproject").mkdir()
     with myproject.as_cwd():
-        cmd_output('git', 'init')
-
-
+        cmd_output("git", "init")
 
 
 class TestParseArgs:
@@ -95,11 +92,26 @@ def test_poetry_cmd():
 
 
 def test_adding_nothing(new_project):
-    proj_ctx, _ = new_project
+    proj_ctx, pyproj_ctx = new_project
     with proj_ctx(git=True) as proj:
-        proj.join('f.py').write('a'*1000)
-        cmd_output('git', 'add', 'f.py')
+        with pyproj_ctx():
+            pass
+        proj.join("requirements.txt").write("")
+        proj.join("f.py").write("a" * 1000)
+        cmd_output("git", "add", "f.py")
         assert main(argv=["f.py"]) == 0
+        assert proj.join("requirements.txt").isfile()
+
+
+def test_missing_requirments(new_project):
+    proj_ctx, pyproj_ctx = new_project
+    with proj_ctx(git=True) as proj:
+        with pyproj_ctx():
+            pass
+        proj.join("f.py").write("a" * 1000)
+        cmd_output("git", "add", "f.py")
+        assert main(argv=["f.py"]) == 1
+        assert proj.join("requirements.txt").isfile()
 
 
 def test_adding_pyproject(new_project):
@@ -124,43 +136,43 @@ def test_adding_requirements(new_project):
 
 def test_adding_lock(new_project):
     proj_ctx, pyproj_ctx = new_project
-    with proj_ctx(git=True):
+    with proj_ctx(git=True) as proj:
         with pyproj_ctx():
             pass
         f = "poetry.lock"
+        assert not proj.join("poetry.lock").isfile()
+        assert not proj.join("requirements.txt").isfile()
         assert main(argv=[f]) == 1
+        assert proj.join("poetry.lock").isfile()
+        assert proj.join("requirements.txt").isfile()
 
 
 def test_adding_requirements_twice(new_project):
-    proj_ctx, _ = new_project
+    logger.setLevel("DEBUG")
+    proj_ctx, pyproj_ctx = new_project
     with proj_ctx(git=True) as proj:
-        f = 'script.py'
+        with pyproj_ctx():
+            pass
+        f = "script.py"
         proj.join(f).write("a" * 1000)
 
+        # requirements doesn't exist, so exit=1
         cmd_output("git", "add", f)
         assert main(argv=[f]) == 1
 
+        # requirements does exist, so exit=0
         cmd_output("git", "add", f)
         assert main(argv=[f]) == 0
 
 
 def test_new_reqs_file_not_added(new_project):
-    proj_ctx, _ = new_project
-    with proj_ctx() as proj:
-        # Should not fail since 'requirements-dev.txt' is not added to git yet
-        f = "requirements.txt"
-        proj.join(f).write("a" * 1000)
-        cmd_output("git", "add", f)
-        assert main(argv=[f, "--requirements", "requirements-dev.txt"]) == 0
-
-
-def test_new_reqs_file_added(new_project):
     proj_ctx, pyproj_ctx = new_project
     with proj_ctx() as proj:
         with pyproj_ctx():
             pass
-        # Should fail since 'requirements-dev.txt' is added to git
-        f = "requirements-dev.txt"
+        # Should not fail since 'requirements-dev.txt' is not added to git yet
+        f = "requirements.txt"
         proj.join(f).write("a" * 1000)
         cmd_output("git", "add", f)
-        assert main(argv=[f, "--requirements", f]) == 1
+        assert main(argv=[f, "--requirements", "requirements-dev.txt"]) == 1
+        assert main(argv=[f, "--requirements", "requirements-dev.txt"]) == 0

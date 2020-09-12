@@ -18,6 +18,28 @@ pytest = "^6.0.2"
 poetry-version-up = 'poetry_hooks.version_up:main'
 poetry-export = 'poetry_hooks.export:main'
 
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest]
+show-capture=true
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

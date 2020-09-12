@@ -1,6 +1,6 @@
+import pytest
 from poetry_hooks.version_up import main
 from poetry_hooks.version_up import parse_args
-import pytest
 
 
 class TestParseArgs:
@@ -32,24 +32,24 @@ def test_no_pkg_dir(new_project):
     proj_ctx, pyproj_ctx = new_project
     with proj_ctx():
         with pyproj_ctx() as pyproj:
-            pyproj['tool']['poetry']['name'] = 'mypkg'
+            pyproj["tool"]["poetry"]["name"] = "mypkg"
         with pytest.raises(NotADirectoryError):
             main() == 1
 
 
 def test_basic_project_no_version(new_project):
     proj_ctx, pyproj_ctx = new_project
-    with proj_ctx(pkg='mypkg'):
+    with proj_ctx(pkg="mypkg"):
         with pyproj_ctx() as pyproj:
-            pyproj['tool']['poetry']['name'] = 'mypkg'
+            pyproj["tool"]["poetry"]["name"] = "mypkg"
         assert main() == 1
 
 
 def test_basic_project_version_change(new_project):
     proj_ctx, pyproj_ctx = new_project
-    with proj_ctx(pkg='mypkg'):
+    with proj_ctx(pkg="mypkg"):
         with pyproj_ctx() as pyproj:
-            pyproj['tool']['poetry']['name'] = 'mypkg'
+            pyproj["tool"]["poetry"]["name"] = "mypkg"
         assert main() == 1
         assert main() == 0
         assert main() == 0
