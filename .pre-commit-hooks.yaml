@@ -1,7 +1,15 @@
 -   id: poetry-version-up
     name: poetry-version-up
-    description: todo
+    description: "Push pyproject.toml information to <pkg>/__version__.py"
     entry: poetry-version-up
+    language: python
+    always_run: true
+    pass_filenames: false
+
+-   id: poetry-export
+    name: poetry-export
+    description: "creates `requirements.txt` file from `pyproject.toml`"
+    entry: poetry-export
     language: python
     always_run: false
     pass_filenames: true

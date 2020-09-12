@@ -1,8 +1,22 @@
-from src.poetry_create_pkg_version.utils import create__version__str
-from src.poetry_create_pkg_version.utils import get_main_pkg
-from src.poetry_create_pkg_version.utils import get_pyproject_toml
-from src.poetry_create_pkg_version.utils import get_version
-from src.poetry_create_pkg_version.utils import parse__version__str
+from pathlib import Path
+
+import pytest
+from poetry_hooks.utils import create__version__str
+from poetry_hooks.utils import get_main_pkg
+from poetry_hooks.utils import get_pyproject_toml
+from poetry_hooks.utils import get_version
+from poetry_hooks.utils import parse__version__str
+
+
+@pytest.fixture
+def fake_project(tmpdir, fixtures):
+    myproject = tmpdir.join("myproject").mkdir()
+    myproject.join("test_pkg").mkdir()
+    fixtures = Path(fixtures)
+    with myproject.as_cwd():
+        txt = fixtures.joinpath("fake_pyproject.toml").read_text()
+        myproject.join("pyproject.toml").write(txt)
+    return myproject
 
 
 def test_get_pyproject_toml(fake_project):

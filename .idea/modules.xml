@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../poetry-create-pkg-version/.idea/poetry-create-pkg-version.iml" filepath="$PROJECT_DIR$/../poetry-create-pkg-version/.idea/poetry-create-pkg-version.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../poetry-hooks/.idea/poetry-hooks.iml" filepath="$PROJECT_DIR$/../poetry-hooks/.idea/poetry-hooks.iml" />
     </modules>
   </component>
 </project>

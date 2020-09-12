@@ -1,3 +1,4 @@
+from poetry_hooks.utils.safe_file_writer import write_safe_file
 import ast
 import os
 import subprocess
@@ -9,10 +10,8 @@ from typing import Optional
 from typing import Set
 
 import toml
-from poetry_create_pkg_version.safe_file_writer import write_safe_file
-
-from .__version__ import __title__
-from .__version__ import __version__
+from poetry_hooks.utils.safe_file_writer import write_safe_file
+from poetry_hooks.__version__ import __version__, __title__
 
 
 class CalledProcessError(RuntimeError):
@@ -45,18 +44,18 @@ class DottedDict(dict):
         else:
             keys = key.split(".")
             if default is not ...:
-
                 def getitem(d, k):
                     return d.get(k, default)
 
             else:
-
                 def getitem(d, k):
                     return d[k]
 
             def getter(d, k):
                 if k.startswith("[") and k.endswith("]"):
                     vallist = []
+                    if not isinstance(d, list) or not isinstance(d, tuple) or not isinstance(d, dict):
+                        d = {}
                     for _v in d:
                         val = getitem(_v, k[1:-1])
                         if isinstance(val, dict):
@@ -79,17 +78,22 @@ def main_dir() -> Path:
 
 
 def get_pyproject_toml():
-    with open(main_dir().joinpath("pyproject.toml")) as f:
-        return DottedDict(toml.load(f))
+    path = main_dir().joinpath("pyproject.toml")
+    try:
+        with open(path) as f:
+            return DottedDict(toml.load(f))
+    except FileNotFoundError:
+        msg = "A `pyproject.toml` file is required. Could not find {}".format(path)
+        raise FileNotFoundError(msg)
 
 
 def get_main_pkg():
     project = get_pyproject_toml()
-    pkgs = project.get("tool.poetry.packages.[include]")
-    srcs = project.get("tool.poetry.packages.[from]", ".")
-
+    pkgs = project.get("tool.poetry.packages")
     if pkgs:
-        pkg = Path(srcs[0]).joinpath(pkgs[0])
+        pkgdata = pkgs[0]
+        pkg = Path(pkgdata.get('from', '.'))
+        pkg = pkg.joinpath(pkgdata['include'])
     else:
         pkg = project.get("tool.poetry.name", None)
     if pkg is None:
@@ -97,7 +101,7 @@ def get_main_pkg():
 
     pkg = main_dir().joinpath(pkg)
     if not pkg.is_dir():
-        raise NotADirectoryError("Package '{}' does not exist".format(pkg))
+        raise NotADirectoryError("Package '{}' does not exist. Please review your pyproject.toml file.".format(pkg))
     return pkg
 
 
@@ -126,20 +130,19 @@ def dict_compare(d1, d2):
     items2 = sorted(d2.items())
     same = True
     for a, b in zip_longest(items1, items2):
-        k1, v1 = a
-        k2, v2 = b
-        if k1 != k2:
+        if a is None or b is None:
             same = False
-        elif isinstance(v1, str) and isinstance(v2, str):
-            same = str_compare(v1.strip(), v2.strip())
         else:
-            same = v1 == v2
-        if not same:
-            print(k1, k2)
-            print(v1, v2)
-            print(v1.__class__)
-            print(v2.__class__)
-            break
+            k1, v1 = a
+            k2, v2 = b
+            if k1 != k2:
+                same = False
+            elif isinstance(v1, str) and isinstance(v2, str):
+                same = str_compare(v1.strip(), v2.strip())
+            else:
+                same = v1 == v2
+            if not same:
+                break
     return same
 
 
