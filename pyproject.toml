@@ -9,7 +9,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-pytest-xdist = "^2.1.0"
+toml = "^0.10.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0.2"
