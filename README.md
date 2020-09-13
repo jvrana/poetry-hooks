@@ -1,10 +1,11 @@
 # Poetry Hooks
 
-![Python package](https://github.com/jvrana/poetry-export-hook/workflows/Python%20package/badge.svg)
+![CI](https://github.com/jvrana/poetry-hooks/workflows/CI/badge.svg)
 
 [![codecov](https://codecov.io/gh/jvrana/poetry-hooks/branch/master/graph/badge.svg)](https://codecov.io/gh/jvrana/poetry-hooks)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jvrana/poetry-export-hook.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jvrana/poetry-export-hook/context:python)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/jvrana/poetry-export-hook.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jvrana/poetry-export-hook/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jvrana/poetry-hooks.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jvrana/poetry-hooks/context:python)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/jvrana/poetry-hooks.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jvrana/poetry-hooks/alerts/)
+
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
