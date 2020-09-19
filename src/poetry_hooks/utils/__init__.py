@@ -13,6 +13,8 @@ from poetry_hooks.__version__ import __title__
 from poetry_hooks.__version__ import __version__
 from poetry_hooks.utils.safe_file_writer import write_safe_file
 
+from .defaults import DEFAULT_VERSION_UP_NAME
+
 
 class CalledProcessError(RuntimeError):
     pass
@@ -45,9 +47,20 @@ class DottedDict(dict):
             keys = key.split(".")
             if default is not ...:
 
-                def getitem(d, k):
-                    return d.get(k, default)
+                class GetItem:
+                    def __init__(self, default):
+                        self.use_default = False
+                        self.default = default
 
+                    def __call__(self, d, k):
+                        if k not in d:
+                            self.use_default = True
+                        if self.use_default:
+                            return self.default
+                        else:
+                            return d[k]
+
+                getitem = GetItem(default=default)
             else:
 
                 def getitem(d, k):
@@ -137,8 +150,14 @@ def get_version():
     return version
 
 
-def get__version__path() -> Path:
-    return get_main_pkg().joinpath("__version__.py")
+def get__version__path(filename: Optional[str] = None) -> Path:
+    pyproj = get_pyproject_toml()
+    filename = filename or pyproj.get(
+        "tool.poetryhooks.version_up_name", DEFAULT_VERSION_UP_NAME
+    )
+    if not filename.endswith("py"):
+        raise ValueError("version filename must end in .py ('{}')".format(filename))
+    return get_main_pkg().joinpath(filename)
 
 
 def str_compare(s1, s2):
@@ -222,15 +241,15 @@ def parse__version__str(s):
     return variables
 
 
-def get__version__exists():
-    return get__version__path().exists()
+def get__version__exists(filename: Optional[str] = None):
+    return get__version__path(filename).exists()
 
 
-def get__version__changed():
+def get__version__changed(filename: Optional[str] = None):
     if not get__version__exists():
         old_ver_str = ""
     else:
-        with open(get__version__path()) as f:
+        with open(get__version__path(filename)) as f:
             old_ver_str = f.read()
     new_ver_str = create__version__str()
     new_ver_data = parse__version__str(new_ver_str)
@@ -238,5 +257,5 @@ def get__version__changed():
     return not dict_compare(new_ver_data, old_ver_data)
 
 
-def write__version__():
-    return write_safe_file(get__version__path(), create__version__str())
+def write__version__(filename: Optional[str] = None):
+    return write_safe_file(get__version__path(filename), create__version__str())

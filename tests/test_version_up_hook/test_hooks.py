@@ -39,17 +39,36 @@ def test_no_pkg_dir(new_project):
 
 def test_basic_project_no_version(new_project):
     proj_ctx, pyproj_ctx = new_project
-    with proj_ctx(pkg="mypkg"):
+    with proj_ctx(pkg="mypkg") as proj:
         with pyproj_ctx() as pyproj:
             pyproj["tool"]["poetry"]["name"] = "mypkg"
+        assert not proj.join("mypkg").join("_version.py").exists()
         assert main() == 1
+        assert proj.join("mypkg").join("_version.py").exists()
 
 
 def test_basic_project_version_change(new_project):
     proj_ctx, pyproj_ctx = new_project
-    with proj_ctx(pkg="mypkg"):
+    with proj_ctx(pkg="mypkg") as proj:
         with pyproj_ctx() as pyproj:
             pyproj["tool"]["poetry"]["name"] = "mypkg"
+        assert not proj.join("mypkg").join("_version.py").exists()
         assert main() == 1
+        assert proj.join("mypkg").join("_version.py").exists()
+        assert main() == 0
+        assert main() == 0
+
+
+def test_change_version_name(new_project):
+    proj_ctx, pyproj_ctx = new_project
+    with proj_ctx(pkg="mypkg") as proj:
+        with pyproj_ctx() as pyproj:
+            pyproj["tool"]["poetryhooks"] = {"version_up_name": "__version.py"}
+            pyproj["tool"]["poetry"]["name"] = "mypkg"
+        assert not proj.join("mypkg").join("_version.py").exists()
+        assert not proj.join("mypkg").join("__version.py").exists()
+        assert main() == 1
+        assert proj.join("mypkg").join("__version.py").exists()
+        assert not proj.join("mypkg").join("_version.py").exists()
         assert main() == 0
         assert main() == 0

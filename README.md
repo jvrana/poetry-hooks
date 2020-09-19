@@ -11,7 +11,7 @@
 
 ## Version up hook
 
-Exports `pyproject.toml` project information to `<pkg>/__version__.py`.
+Exports `pyproject.toml` project information to `<pkg>/_version.py`.
 The `tool.poetry.packages` key is used. If multiple entries are found, the first
 entry is used. Else, `tool.poetry.name` is used as the main package.
 
@@ -20,6 +20,14 @@ entry is used. Else, `tool.poetry.name` is used as the main package.
     rev: 0.1.0
     hooks:
     -   id: poetry-version-up
+```
+
+You can change the default filename of the created version file by adding
+the option to the pyproject.toml file (must end in .py):
+
+```yaml
+[tool.poetryhooks]
+version_up_name = "_pkg_version.py"
 ```
 
 ## Export hook

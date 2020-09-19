@@ -41,6 +41,9 @@ exclude = '''
 [tool.pytest]
 show-capture=true
 
+[tool.poetry_hooks]
+version_up_path='_version.py'
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
