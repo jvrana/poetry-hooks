@@ -200,7 +200,7 @@ def create__version__str():
     data["__authors__"] = project.get("tool.poetry.authors", [])
     data["__repository__"] = project.get("tool.poetry.repository", "")
     data["__homepage__"] = project.get("tool.poetry.homepage", "")
-    data["__description__"] = project.get("tool.poetry.homepage", "")
+    data["__description__"] = project.get("tool.poetry.description", "")
     data["__maintainers__"] = project.get("tool.poetry.maintainers", "")
     data["__readme__"] = project.get("tool.poetry.readme", "")
     data["__license__"] = project.get("tool.poetry.license", "")
