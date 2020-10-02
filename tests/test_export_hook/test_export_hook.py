@@ -15,17 +15,26 @@ def tempdir(tmpdir, pyproject):
 
 class TestParseArgs:
     def test_parse_args_default(self):
-        namespace, args = parse_args(argv=["f1", "f2", "--otherarg"])
+        namespace, args = parse_args(argv=["f1", "f2"])
+        assert namespace.filenames == ["f1", "f2"]
+        assert namespace.requirements == "requirements.txt"
+        assert namespace.verbose == 0
+
+    def test_parse_args_default_2(self):
+        namespace, args = parse_args(argv=["f1", "f2", "--poetry", "--otherarg"])
         assert namespace.filenames == ["f1", "f2"]
         assert namespace.requirements == "requirements.txt"
         assert namespace.verbose == 0
         assert args == ["--otherarg"]
 
     def test_parse_args_requirements(self):
-        args, _ = parse_args(argv=["f1", "f2", "--requirements", "r.txt"])
+        args, oargs = parse_args(
+            argv=["f1", "f2", "--requirements", "r.txt", "--poetry", "--without-hashes"]
+        )
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "r.txt"
         assert args.verbose == 0
+        assert oargs == ["--without-hashes"]
 
     def test_parse_args_v(self):
         args, _ = parse_args(argv=["f1", "f2", "-v"])
@@ -46,20 +55,22 @@ class TestParseArgs:
         assert args.verbose == 3
 
     def test_parse_args_dev(self):
-        args, _ = parse_args(argv=["f1", "f2", "-D"])
+        args, _ = parse_args(argv=["f1", "f2", "--poetry", "-D"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 0
 
     def test_parse_args_extras1(self):
-        args, oargs = parse_args(argv=["f1", "f2", "-E", "docs"])
+        args, oargs = parse_args(argv=["f1", "f2", "--poetry", "-E", "docs"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 0
         assert oargs == ["-E", "docs"]
 
     def test_parse_args_extras2(self):
-        args, oargs = parse_args(argv=["f1", "f2", "-E", "docs", "-E", "lint"])
+        args, oargs = parse_args(
+            argv=["f1", "f2", "--poetry", "-E", "docs", "-E", "lint"]
+        )
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 0
@@ -172,10 +183,26 @@ def test_without_hashes_option(new_project):
         cmd_output("git", "add", f)
         print(cmd_output("poetry", "self", "-V"))
         assert (
-            main(argv=[f, "--without-hashes", "--requirements", "requirements-dev.txt"])
+            main(
+                argv=[
+                    f,
+                    "--requirements",
+                    "requirements-dev.txt",
+                    "--poetry",
+                    "--without-hashes",
+                ]
+            )
             == 1
         )
         assert (
-            main(argv=[f, "--without-hashes", "--requirements", "requirements-dev.txt"])
+            main(
+                argv=[
+                    f,
+                    "--requirements",
+                    "requirements-dev.txt",
+                    "--poetry",
+                    "--without-hashes",
+                ]
+            )
             == 0
         )

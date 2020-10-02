@@ -95,7 +95,12 @@ class TestBehaviorDrivenTests:
                     "pyproject": True,
                     "results": [
                         {
-                            "args": ["--requirements", "requirements-dev.txt", "--dev"],
+                            "args": [
+                                "--requirements",
+                                "requirements-dev.txt",
+                                "--poetry",
+                                "--dev",
+                            ],
                             "paths": {
                                 "requirements.txt": lambda x: not x.isfile(),
                                 "requirements-dev.txt": lambda x: not x.isfile(),
@@ -104,7 +109,12 @@ class TestBehaviorDrivenTests:
                             "exit_code": 1,
                         },
                         {
-                            "args": ["--requirements", "requirements-dev.txt", "--dev"],
+                            "args": [
+                                "--requirements",
+                                "requirements-dev.txt",
+                                "--poetry",
+                                "--dev",
+                            ],
                             "paths": {
                                 "requirements.txt": lambda x: not x.isfile(),
                                 "requirements-dev.txt": lambda x: x.isfile(),
@@ -115,6 +125,46 @@ class TestBehaviorDrivenTests:
                     ],
                 },
                 id="create requirements-dev.txt",
+            ),
+            pytest.param(
+                {
+                    "git": True,
+                    "pkg": "mypkg",
+                    "pyproject": True,
+                    "results": [
+                        {
+                            "args": [
+                                "--requirements",
+                                "requirements-extras.txt",
+                                "--poetry",
+                                "-E",
+                                "myextras",
+                            ],
+                            "paths": {
+                                "requirements.txt": lambda x: not x.isfile(),
+                                "requirements-extras.txt": lambda x: not x.isfile(),
+                                "poetry.lock": lambda x: not x.isfile(),
+                            },
+                            "exit_code": 1,
+                        },
+                        {
+                            "args": [
+                                "--requirements",
+                                "requirements-extras.txt",
+                                "--poetry",
+                                "-E",
+                                "myextras",
+                            ],
+                            "paths": {
+                                "requirements.txt": lambda x: not x.isfile(),
+                                "requirements-extras.txt": lambda x: x.isfile(),
+                                "poetry.lock": lambda x: x.isfile(),
+                            },
+                            "exit_code": 0,
+                        },
+                    ],
+                },
+                id="create with extras",
             ),
             pytest.param(
                 {

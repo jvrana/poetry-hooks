@@ -81,8 +81,13 @@ def parse_args(argv):
     parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Verbosity (-v, -vv, -vvv)"
     )
-    namespace, args = parser.parse_known_args(argv)
-    return namespace, args
+    if "--poetry" in argv:
+        i = argv.index("--poetry")
+    else:
+        i = len(argv)
+    hook_args, poetry_args = argv[:i], argv[i + 1 :]
+    namespace = parser.parse_args(hook_args)
+    return namespace, poetry_args
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
