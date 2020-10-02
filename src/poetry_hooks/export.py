@@ -85,6 +85,7 @@ def parse_args(argv):
         namespace = parser.parse_args(argv)
         poetry_args = []
     else:
+        print(argv)
         if "--poetry" in argv:
             i = argv.index("--poetry")
         else:
