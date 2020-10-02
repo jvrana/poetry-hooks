@@ -90,6 +90,9 @@ def parse_args(argv):
         else:
             i = len(argv)
         hook_args, poetry_args = argv[:i], argv[i + 1 :]
+        print(argv)
+        print(hook_args)
+        print(poetry_args)
         namespace = parser.parse_args(hook_args)
     return namespace, poetry_args
 

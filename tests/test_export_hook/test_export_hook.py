@@ -85,6 +85,17 @@ def test_poetry_cmd():
     assert o == e
 
 
+def test_argv_none(new_project):
+    proj_ctx, pyproj_ctx = new_project
+    with proj_ctx(git=True) as proj:
+        with pyproj_ctx():
+            pass
+        proj.join("requirements.txt").write("")
+        proj.join("f.py").write("a" * 1000)
+        cmd_output("git", "add", "f.py")
+        assert main(argv=None) == 0
+
+
 def test_adding_nothing(new_project):
     proj_ctx, pyproj_ctx = new_project
     with proj_ctx(git=True) as proj:
