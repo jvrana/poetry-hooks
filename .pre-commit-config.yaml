@@ -27,10 +27,10 @@ repos:
     -   id: reorder-python-imports
         args: [--py3-plus]
 -   repo: https://github.com/jvrana/poetry-hooks
-    rev: 0.3.0
+    rev: 0.2.0
     hooks:
     -   id: poetry-version-up
     -   id: poetry-export
     -   id: poetry-export
         name: poetry-export-dev
-        args: ['--without-hashes', '--requirements', 'requirements-dev.txt', '--dev', '-vvv']
+        args: ['--requirements', 'requirements-dev.txt', '--dev', '-vvv']
