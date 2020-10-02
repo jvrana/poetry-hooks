@@ -3,7 +3,6 @@ import logging
 import os
 from typing import Optional
 from typing import Sequence
-from typing import Tuple
 
 from poetry_hooks.utils import cmd_output
 
@@ -11,19 +10,13 @@ from poetry_hooks.utils import cmd_output
 logger = logging.getLogger("poetry_export_hook")
 
 
-def poetry_cmd(filename: str, dev: bool = False, extras: Tuple[str] = ()):
-    cmd = ["poetry", "export", "-f", "requirements.txt"]
-    if dev:
-        cmd += ["--dev"]
-    if extras:
-        for e in extras:
-            cmd += ["-E", e]
-    return cmd
+def poetry_cmd(*args):
+    return ("poetry", "export", "-f", "requirements.txt") + args
 
 
-def poetry_export(filename: str, dev: bool = False, extras: Tuple[str] = ()):
+def poetry_export(filename: str, args):
     retv = 0
-    out = cmd_output(*poetry_cmd(filename, dev, extras))
+    out = cmd_output(*poetry_cmd(*args))
     create_new = False
     if not os.path.isfile(filename):
         logger.info("File '{}' does not exist.".format(filename))
@@ -60,11 +53,11 @@ PYPROJECT = "pyproject.toml"
 POETRYLOCK = "poetry.lock"
 
 
-def run(filenames, filename, dev, extras):
+def run(filenames, filename, args):
     retv = 0
     files = {PYPROJECT, POETRYLOCK, filename}
     if files.intersection(set(filenames)) or not os.path.isfile(filename):
-        retv = poetry_export(filename=filename, dev=dev, extras=tuple(extras))
+        retv = poetry_export(filename=filename, args=args)
     else:
         logger.warning(
             "Filename '{}' not in expected filenames {}".format(filename, filenames)
@@ -88,38 +81,22 @@ def parse_args(argv):
     parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Verbosity (-v, -vv, -vvv)"
     )
-    parser.add_argument(
-        "-E",
-        "--extras",
-        action="append",
-        help='Export extras ("-E docs -E lint" etc.)',
-        default=[],
-    )
-    parser.add_argument(
-        "-D",
-        "--dev",
-        action="store_true",
-        default=False,
-        help="Export development requirements",
-    )
-    args = parser.parse_args(argv)
-    return args
+    namespace, args = parser.parse_known_args(argv)
+    return namespace, args
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     logger.debug("main: argv: {}".format(argv))
-    args = parse_args(argv)
-    if args.verbose == 3:
+    namespace, args = parse_args(argv)
+    if namespace.verbose == 3:
         logger.setLevel("DEBUG")
-    elif args.verbose == 2:
+    elif namespace.verbose == 2:
         logger.setLevel("INFO")
-    elif args.verbose == 1:
+    elif namespace.verbose == 1:
         logger.setLevel("WARNING")
 
     logger.debug("Args: {}".format(args))
-    return run(
-        args.filenames, filename=args.requirements, dev=args.dev, extras=args.extras
-    )
+    return run(namespace.filenames, filename=namespace.requirements, args=args)
 
 
 if __name__ == "__main__":
