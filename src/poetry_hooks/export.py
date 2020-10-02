@@ -82,7 +82,8 @@ def parse_args(argv):
         "-v", "--verbose", action="count", default=0, help="Verbosity (-v, -vv, -vvv)"
     )
     if argv is None:
-        namespace = parser.parse_args(argv)
+        print('argv is None')
+        namespace = parser.parse_known_args(argv)
         poetry_args = []
     else:
         print(argv)
