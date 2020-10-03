@@ -15,66 +15,66 @@ def tempdir(tmpdir, pyproject):
 
 class TestParseArgs:
     def test_parse_args_default(self):
-        namespace, args = parse_args(argv=["f1", "f2"])
-        assert namespace.filenames == ["f1", "f2"]
-        assert namespace.requirements == "requirements.txt"
-        assert namespace.verbose == 0
+        args = parse_args(argv=["f1", "f2"])
+        assert args.filenames == ["f1", "f2"]
+        assert args.requirements == "requirements.txt"
+        assert args.verbose == 0
 
     def test_parse_args_default_2(self):
-        namespace, args = parse_args(argv=["f1", "f2", "--poetry", "--otherarg"])
+        namespace = parse_args(argv=["f1", "f2", "--poetry='--otherarg -E docs'"])
         assert namespace.filenames == ["f1", "f2"]
         assert namespace.requirements == "requirements.txt"
         assert namespace.verbose == 0
-        assert args == ["--otherarg"]
+        assert namespace.poetry == ['--otherarg', '-E', 'docs']
 
     def test_parse_args_requirements(self):
-        args, oargs = parse_args(
-            argv=["f1", "f2", "--requirements", "r.txt", "--poetry", "--without-hashes"]
+        args = parse_args(
+            argv=["f1", "f2", "--requirements", "r.txt", "--poetry='--without-hashes'"]
         )
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "r.txt"
         assert args.verbose == 0
-        assert oargs == ["--without-hashes"]
+        assert args.poetry == ["--without-hashes"]
 
     def test_parse_args_v(self):
-        args, _ = parse_args(argv=["f1", "f2", "-v"])
+        args = parse_args(argv=["f1", "f2", "-v"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 1
 
     def test_parse_args_vv(self):
-        args, _ = parse_args(argv=["f1", "f2", "-vv"])
+        args = parse_args(argv=["f1", "f2", "-vv"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 2
 
     def test_parse_args_vvv(self):
-        args, _ = parse_args(argv=["f1", "f2", "-vvv"])
+        args = parse_args(argv=["f1", "f2", "-vvv"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 3
 
     def test_parse_args_dev(self):
-        args, _ = parse_args(argv=["f1", "f2", "--poetry", "-D"])
+        args = parse_args(argv=["f1", "f2", "--poetry='-D'"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 0
 
     def test_parse_args_extras1(self):
-        args, oargs = parse_args(argv=["f1", "f2", "--poetry", "-E", "docs"])
+        args = parse_args(argv=["f1", "f2", "--poetry='-E docs'"])
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 0
-        assert oargs == ["-E", "docs"]
+        assert args.poetry == ['-E', 'docs']
 
     def test_parse_args_extras2(self):
-        args, oargs = parse_args(
-            argv=["f1", "f2", "--poetry", "-E", "docs", "-E", "lint"]
+        args = parse_args(
+            argv=["f1", "f2", "--poetry='-E docs -E lint'"]
         )
         assert args.filenames == ["f1", "f2"]
         assert args.requirements == "requirements.txt"
         assert args.verbose == 0
-        assert oargs == ["-E", "docs", "-E", "lint"]
+        assert args.poetry == ["-E", "docs", "-E", "lint"]
 
 
 def test_poetry_cmd():
@@ -199,8 +199,7 @@ def test_without_hashes_option(new_project):
                     f,
                     "--requirements",
                     "requirements-dev.txt",
-                    "--poetry",
-                    "--without-hashes",
+                    "--poetry='--without-hashes'",
                 ]
             )
             == 1
@@ -211,8 +210,7 @@ def test_without_hashes_option(new_project):
                     f,
                     "--requirements",
                     "requirements-dev.txt",
-                    "--poetry",
-                    "--without-hashes",
+                    "--poetry='--without-hashes'",
                 ]
             )
             == 0

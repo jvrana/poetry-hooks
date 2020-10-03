@@ -98,8 +98,7 @@ class TestBehaviorDrivenTests:
                             "args": [
                                 "--requirements",
                                 "requirements-dev.txt",
-                                "--poetry",
-                                "--dev",
+                                "--poetry='--dev'",
                             ],
                             "paths": {
                                 "requirements.txt": lambda x: not x.isfile(),
@@ -112,8 +111,7 @@ class TestBehaviorDrivenTests:
                             "args": [
                                 "--requirements",
                                 "requirements-dev.txt",
-                                "--poetry",
-                                "--dev",
+                                "--poetry='--dev'",
                             ],
                             "paths": {
                                 "requirements.txt": lambda x: not x.isfile(),
@@ -136,9 +134,7 @@ class TestBehaviorDrivenTests:
                             "args": [
                                 "--requirements",
                                 "requirements-extras.txt",
-                                "--poetry",
-                                "-E",
-                                "myextras",
+                                "--poetry='-E myextras'",
                             ],
                             "paths": {
                                 "requirements.txt": lambda x: not x.isfile(),
@@ -151,9 +147,7 @@ class TestBehaviorDrivenTests:
                             "args": [
                                 "--requirements",
                                 "requirements-extras.txt",
-                                "--poetry",
-                                "-E",
-                                "myextras",
+                                "--poetry='-E myextras'",
                             ],
                             "paths": {
                                 "requirements.txt": lambda x: not x.isfile(),

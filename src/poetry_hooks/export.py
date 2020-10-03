@@ -81,36 +81,33 @@ def parse_args(argv):
     parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Verbosity (-v, -vv, -vvv)"
     )
-    if argv is None:
-        print('argv is None')
-        namespace = parser.parse_known_args(argv)
-        poetry_args = []
-    else:
-        print(argv)
-        if "--poetry" in argv:
-            i = argv.index("--poetry")
-        else:
-            i = len(argv)
-        hook_args, poetry_args = argv[:i], argv[i + 1 :]
-        print(argv)
-        print(hook_args)
-        print(poetry_args)
-        namespace = parser.parse_args(hook_args)
-    return namespace, poetry_args
+    parser.add_argument(
+        '-p',
+        '--poetry',
+        help='Poetry arguments (as a str)',
+        default=''
+    )
+    args = parser.parse_args(argv)
+
+    poetry_args = args.poetry.strip('"').strip("'")
+    poetry_args = [a.strip() for a in poetry_args.split(' ') if a.strip()]
+    args.poetry = poetry_args
+    return args
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     logger.debug("main: argv: {}".format(argv))
-    namespace, args = parse_args(argv)
-    if namespace.verbose == 3:
+    args = parse_args(argv)
+    if args.verbose == 3:
         logger.setLevel("DEBUG")
-    elif namespace.verbose == 2:
+    elif args.verbose == 2:
         logger.setLevel("INFO")
-    elif namespace.verbose == 1:
+    elif args.verbose == 1:
         logger.setLevel("WARNING")
 
     logger.debug("Args: {}".format(args))
-    return run(namespace.filenames, filename=namespace.requirements, args=args)
+
+    return run(args.filenames, filename=args.requirements, args=args.poetry)
 
 
 if __name__ == "__main__":
