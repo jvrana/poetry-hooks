@@ -46,8 +46,6 @@ repos:
 ```
 
 Exporting basic requirements + development requirements with custom filename.
-Notice that poetry arguments are immediately after the '--poetry' argument.
-Hook specific arguments are placed immediately before the '--poetry' argument.
 
 ```yaml
 repos:
@@ -55,12 +53,10 @@ repos:
     rev: 0.1.0
     hooks:
     -   id: poetry-export
-        args: ["--requirements", "requirements-dev.txt", "--poetry", "--dev"]
+        args: ["--requirements", "requirements-dev.txt", "--poetry='--dev'"]
 ```
 
 Exporting extra requirements:
-Notice that poetry arguments are immediately after the '--poetry' argument.
-Hook specific arguments are placed immediately before the '--poetry' argument.
 
 ```yaml
 repos:
@@ -68,7 +64,7 @@ repos:
     rev: 0.0.1a2
     hooks:
     -   id: poetry-export
-        args: ["--requirements", "requirements-docs.txt", "--poetry", "-E", "docs"]
+        args: ["--requirements", "requirements-docs.txt", "--poetry='-E docs'"]
 ```
 
 
@@ -92,7 +88,7 @@ repos:
     hooks:
     -   id: poetry-export
     -   id: poetry-export
-        args: ['--requirements', 'requirements-dev.txt', "--poetry", '--dev']    
+        args: ['--requirements', 'requirements-dev.txt', "--poetry='--dev'"]    
     -   id: poetry-export
-        args: ['--requirements', 'requirements-docs.txt', "--poetry", '--dev', '-E', 'docs']
+        args: ['--requirements', 'requirements-docs.txt', "--poetry='--dev -E docs'"]
 ```
